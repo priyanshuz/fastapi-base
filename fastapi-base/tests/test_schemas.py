@@ -75,7 +75,7 @@ class TestIResponseBase:
     def test_response_base_serialization(self):
         """Test JSON serialization"""
         user = User(id=1, name="John", email="john@example.com")
-        response = IResponseBase[User](message="Success", data=user, meta={"count": 1})
+        response = IResponseBase[User](message="Success", data=user, metadata={"count": 1})
 
         json_data = response.model_dump()
         expected = {
