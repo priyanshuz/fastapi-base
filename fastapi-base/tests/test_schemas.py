@@ -25,24 +25,24 @@ class TestIResponseBase:
     def test_response_base_with_string_data(self):
         """Test IResponseBase with string data"""
         response = IResponseBase[str](
-            message="Success", data="Hello World", meta={"version": "1.0"}
+            message="Success", data="Hello World", metadata={"version": "1.0"}
         )
 
         assert response.message == "Success"
         assert response.data == "Hello World"
-        assert response.meta == {"version": "1.0"}
+        assert response.metadata == {"version": "1.0"}
 
     def test_response_base_with_user_model(self):
         """Test IResponseBase with custom model"""
         user = User(id=1, name="John Doe", email="john@example.com")
         response = IResponseBase[User](
-            message="User found", data=user, meta={"timestamp": "2023-01-01"}
+            message="User found", data=user, metadata={"timestamp": "2023-01-01"}
         )
 
         assert response.message == "User found"
         assert response.data == user
         assert response.data.name == "John Doe"
-        assert response.meta["timestamp"] == "2023-01-01"
+        assert response.metadata["timestamp"] == "2023-01-01"
 
     def test_response_base_with_list_data(self):
         """Test IResponseBase with list of models"""
@@ -62,7 +62,7 @@ class TestIResponseBase:
         response = IResponseBase[str]()
 
         assert response.message == ""
-        assert response.meta == {}
+        assert response.metadata == {}
         assert response.data is None
 
     def test_response_base_with_none_data(self):
@@ -80,7 +80,7 @@ class TestIResponseBase:
         json_data = response.model_dump()
         expected = {
             "message": "Success",
-            "meta": {"count": 1},
+            "metadata": {"count": 1},
             "data": {"id": 1, "name": "John", "email": "john@example.com"},
         }
 
@@ -147,12 +147,12 @@ class TestIPostResponseBase:
         """Test POST response with metadata"""
         user = User(id=1, name="John", email="john@example.com")
         response = IPostResponseBase[User](
-            data=user, meta={"created_at": "2023-01-01", "version": "1.0"}
+            data=user, metadata={"created_at": "2023-01-01", "version": "1.0"}
         )
 
         assert response.message == "Data created correctly"
         assert response.data == user
-        assert response.meta["created_at"] == "2023-01-01"
+        assert response.metadata["created_at"] == "2023-01-01"
 
 
 class TestResponseModelsIntegration:
@@ -176,7 +176,7 @@ class TestResponseModelsIntegration:
             User(id=2, name="Jane", email="jane@example.com"),
         ]
 
-        response = IGetResponseBase[List[User]](data=users, meta={"total": 2, "page": 1})
+        response = IGetResponseBase[List[User]](data=users, metadata={"total": 2, "page": 1})
 
         assert isinstance(response.data, list)
         assert len(response.data) == 2
@@ -191,7 +191,7 @@ class TestResponseModelsIntegration:
 
         # Should have all attributes from base class
         assert hasattr(get_response, "message")
-        assert hasattr(get_response, "meta")
+        assert hasattr(get_response, "metadata")
         assert hasattr(get_response, "data")
 
         # Should be instance of both
@@ -211,11 +211,11 @@ class TestResponseModelsValidation:
             )
 
     def test_meta_must_be_dict(self):
-        """Test that meta must be a dictionary"""
+        """Test that metadata must be a dictionary"""
         with pytest.raises(ValidationError):  # Pydantic validation error
             IResponseBase[str](
                 message="Test",
-                meta="not a dict",  # Wrong type
+                metadata="not a dict",  # Wrong type
             )
 
     def test_message_must_be_string(self):
